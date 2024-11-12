@@ -13,7 +13,9 @@ const HomePage = () => {
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState('');
-  const[fileName, setFileName] = useState('')
+  const[redlinedFileName, setRedlinedFileName] = useState('')
+  const[standardFileName, setStandardFileName] = useState('')
+
   const token = useSelector((state) => state.auth.token);
 
   const handleStandardFileSelect = (file) => setStandardFile(file);
@@ -64,7 +66,27 @@ const HomePage = () => {
        
       });
       console.log('res', response.data.message)
-      setFileName(response.data.message)
+      setStandardFileName(response.data.message)
+      console.log('response', response.data.message)
+
+    } catch (error) {
+      setError('Failed to fetch file name');
+      setLoading(false);
+      setProgress(0);
+    }
+  };
+  const handleRedlinedFiles = async () => {
+    try {
+      const response = await axios.get(`${baseUrl}view-redlined-file`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'ngrok-skip-browser-warning': '69420',
+          'Accept': 'application/json',
+        },
+       
+      });
+      console.log('res', response.data.message)
+      setRedlinedFileName(response.data.message)
       console.log('response', response.data.message)
 
     } catch (error) {
@@ -98,7 +120,7 @@ const HomePage = () => {
     <div className="min-h-screen bg-white-50">
       <Navbar/>
 
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-1  md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Left Section: Upload Section - 25% Width */}
         <div className="col-span-1 bg-white p-4 shadow rounded-lg">
           <h3 className="font-bold text-center text-xl pb-2">Upload Files</h3>

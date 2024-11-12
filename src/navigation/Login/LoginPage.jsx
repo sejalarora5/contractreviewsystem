@@ -27,7 +27,7 @@ const LoginPage = () => {
     <div className="h-screen flex flex-col md:flex-row">
       <div className="flex-1 flex flex-col">
         <div className="flex justify-start items-center p-4">
-          <img className="w-60 h-20 object-contain" src={logo} alt="Netsmartz Logo" />
+          <img className="w-5=40 h-20 object-contain" src={logo} alt="Netsmartz Logo" />
         </div>
         <div className="flex-1 flex justify-center items-center bg-white-100 mb-20">
           <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-lg drop-shadow-lg">

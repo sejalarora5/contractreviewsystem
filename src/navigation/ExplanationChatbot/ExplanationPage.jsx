@@ -15,7 +15,7 @@ const ExplanationPage = () => {
             <Navbar />
 
 
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 p-4">
                 {/* Left Section for Validation Specifics */}
                 <div className="col-span-1 bg-white p-4 shadow-md rounded-lg">
                     <h3 className="font-bold text-center text-xl pb-2">Select Document</h3>

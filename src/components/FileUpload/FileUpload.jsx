@@ -40,7 +40,9 @@ const FileUpload = ({ labelText = "Upload File" , onFileSelect, id}) => {
                     className="flex flex-col items-center space-x-2  cursor-pointer rounded-lg p-8  bg-gray-100 text-white"
                 >
                     <img className="w-8/12 h-2/6 object-contain" src={fileupload} alt="Upload file" />
-                    <p className='text-center text-black pt-5'>{labelText}</p>
+                    {/* <p className='text-center text-black pt-5'>{labelText}</p> */}
+                    <p className="text-center text-black pt-5 line-clamp-2 max-w-xs sm:max-w-[8rem] md:max-w-[10rem] lg:max-w-[12rem]">{labelText}</p>
+
                 </label>
 
 
