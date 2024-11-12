@@ -74,10 +74,10 @@ const HomePage = () => {
     <div className="min-h-screen bg-white-50">
       <Navbar/>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-4 gap-4">
         {/* Left Section: Upload Section - 25% Width */}
         <div className="col-span-1 bg-white p-4 shadow rounded-lg">
-          <h3 className="font-bold text-center pb-2">Upload Files</h3>
+          <h3 className="font-bold text-center text-xl pb-2">Upload Files</h3>
           <FileUpload id={1} labelText="Upload standard file" onFileSelect={handleStandardFileSelect} />
           <FileUpload id={2} labelText="Upload redlined file" onFileSelect={handleRevisedFileSelect} />
 
@@ -95,9 +95,10 @@ const HomePage = () => {
           )}
           {error && <div className="mt-4 text-red-500">{error}</div>}
 
-          <button onClick={handleUpload} className="btn btn-block mt-4">Process Documents</button>
-          <button className="flex items-center btn-block justify-center space-x-2 text-red-500 mt-2" onClick={handleDeleteDocuments}>
-            <RiDeleteBin5Fill className="w-6 h-8" />
+          <button onClick={handleUpload} className="btn btn-block hover:bg-[#f58220] mt-4">Process Documents</button>
+          <button className="flex items-center btn-block justify-center space-x-2 pt-2 text-red-500 mt-2" onClick={handleDeleteDocuments}>
+            {/* <RiDeleteBin5Fill className="w-6 h-8" /> */}
+            <svg id="Layer_1" height="30" viewBox="0 0 24 24" width="30" xmlns="http://www.w3.org/2000/svg" data-name="Layer 1"><path fill="red" d="m21.414 5h-4.414v-4.414zm.586 2v17h-20v-21a3 3 0 0 1 3-3h10v7zm-8.586 8 2.543-2.543-1.414-1.414-2.543 2.543-2.543-2.543-1.414 1.414 2.543 2.543-2.543 2.543 1.414 1.414 2.543-2.543 2.543 2.543 1.414-1.414z"/></svg>
           </button>
 
         </div>
@@ -106,7 +107,7 @@ const HomePage = () => {
         <CompareDocuments />
 
         {/* Right Section: History - 25% Width */}
-        <div className="col-span-1 bg-white p-4 shadow rounded-lg">
+        {/* <div className="col-span-1 bg-white p-4 shadow rounded-lg">
           <h3 className="font-bold mb-4 text-center">History</h3>
           <ul className="space-y-2">
             {["2023-10-01", "2023-09-28", "2023-09-25", "2023-09-20", "2023-09-15"].map((date, index) => (
@@ -117,7 +118,7 @@ const HomePage = () => {
               </li>
             ))}
           </ul>
-        </div>
+        </div> */}
       </div>
     </div>
   );

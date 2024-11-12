@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import upload from "../../assets/uploadfile.png"
+import fileupload from "../../assets/file-upload.svg"
+
 const baseUrl = import.meta.env.VITE_BASE_URL;
 import { useSelector } from 'react-redux';
 
@@ -35,10 +37,10 @@ const FileUpload = ({ labelText = "Upload File" , onFileSelect, id}) => {
                 />
                 <label
                     htmlFor={`file-upload${id}`}
-                    className="flex flex-col items-center space-x-2 cursor-pointer bg-[#FFFFFF] text-white"
+                    className="flex flex-col items-center space-x-2  cursor-pointer rounded-lg p-8  bg-gray-100 text-white"
                 >
-                    <img className="w-8/12 h-2/6 object-contain" src={upload} alt="Upload file" />
-                    <p className='text-center text-black'>{labelText}</p>
+                    <img className="w-8/12 h-2/6 object-contain" src={fileupload} alt="Upload file" />
+                    <p className='text-center text-black pt-5'>{labelText}</p>
                 </label>
 
 

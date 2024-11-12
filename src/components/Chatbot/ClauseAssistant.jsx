@@ -119,8 +119,10 @@ const ClauseAssistant = ({ selectedDocumentType = selectedDocumentType }) => {
                                     />
                                 </svg>
                             </div>) : (
-                            <div className="absolute right-4 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-[#f58220] text-white rounded-full flex items-center justify-center border-2 border-[#f58220] cursor-pointer" onClick={handleSubmit}>
-                                <AiOutlineSend className="w-5 h-5" />
+                            <div className="absolute right-4 top-1/2 transform -translate-y-1/2 w-8 h-8  text-white  flex items-center justify-center cursor-pointer" onClick={handleSubmit}>
+                                {/* <AiOutlineSend className="w-5 h-5" /> */}
+                                <svg xmlns="http://www.w3.org/2000/svg" id="Layer_1" data-name="Layer 1" viewBox="0 0 24 24" width="30" height="30"><path fill="#f58220" d="m.172,3.708C-.216,2.646.076,1.47.917.713,1.756-.041,2.951-.211,3.965.282l18.09,8.444c.97.454,1.664,1.283,1.945,2.273H4.048L.229,3.835c-.021-.041-.04-.084-.057-.127Zm3.89,9.292L.309,20.175c-.021.04-.039.08-.054.122-.387,1.063-.092,2.237.749,2.993.521.467,1.179.708,1.841.708.409,0,.819-.092,1.201-.279l18.011-8.438c.973-.456,1.666-1.288,1.945-2.28H4.062Z"/></svg>
+
                             </div>
                         )}
                     </div>

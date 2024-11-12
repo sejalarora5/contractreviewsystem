@@ -19,8 +19,8 @@ const CompareDocuments = () => {
     setComparisonData(null);
 
     try {
-      const url = 'https://9669-112-196-16-34.ngrok-free.app/comparison/compare-documents';
-      const response = await axios.get(url, {
+      // const url = 'https://9669-112-196-16-34.ngrok-free.app/comparison/compare-documents';
+      const response = await axios.get(`${baseUrl}comparison/compare-documents`, {
         headers: {
           Authorization: `Bearer ${token}`,
           'ngrok-skip-browser-warning': '69420',
@@ -50,9 +50,9 @@ const CompareDocuments = () => {
   };
 
   return (
-    <div className="col-span-2 bg-white p-4 shadow rounded-lg flex flex-col items-center relative">
+    <div className="col-span-3 bg-white p-4 shadow rounded-lg flex flex-col items-center relative">
       {loading && (
-        <div className="flex justify-center items-center w-full h-full absolute top-0 left-0 bg-opacity-50 bg-gray-800 z-50">
+        <div className="flex justify-center items-center w-full h-full absolute top-0 left-0 bg-opacity-50 bg-white z-50">
           <div className="w-16 h-16 border-4 border-t-4 border-gray-300 border-t-[#f58220] rounded-full animate-spin"></div>
         </div>
       )}
@@ -70,7 +70,7 @@ const CompareDocuments = () => {
           <h2 className="font-semibold text-xl mb-4 text-center">Compare your Documents</h2>
           <button
             onClick={handleCompare}
-            className="text-white bg-gradient-to-r from-[#f58220] via-[#FEB47B] to-[#f58220] hover:bg-gradient-to-l focus:ring-4 focus:outline-none focus:ring-orange-200 dark:focus:ring-orange-800 font-medium rounded-full text-lg py-3 w-2/5 text-center shadow-lg transform transition duration-300 hover:scale-105"
+            className="text-white bg-gradient-to-r bg-[#f58220] hover:bg-gradient-to-l focus:ring-4 focus:outline-none focus:ring-orange-200 dark:focus:ring-orange-800 font-medium rounded-full text-lg py-3 w-2/5 text-center shadow-lg transform transition duration-300 hover:scale-105"
           >
             Compare
           </button>
