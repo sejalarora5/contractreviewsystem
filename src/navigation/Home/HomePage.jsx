@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 const baseUrl = import.meta.env.VITE_BASE_URL;
 import axios from 'axios';
 import CompareDocuments from '../../components/CompareDocuments/CompareDocuments';
+import Navbar from '../../components/Navbar/Navbar';
 
 const HomePage = () => {
   const [standardFile, setStandardFile] = useState(null);
@@ -71,24 +72,7 @@ const HomePage = () => {
 
   return (
     <div className="min-h-screen bg-white-50">
-      <nav className="bg-black text-white flex items-center justify-between p-4 mb-4">
-        <div className="flex items-center space-x-4">
-          <button className="btn btn-ghost text-lg text-white normal-case">Compare</button>
-          <button className="btn btn-ghost text-lg text-gray-400 normal-case">Validation</button>
-        </div>
-        <div className="dropdown dropdown-end">
-          <button className="btn btn-ghost btn-circle">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-            </svg>
-          </button>
-          <ul className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52">
-            <li><a href="#">Profile</a></li>
-            <li><a href="#">Settings</a></li>
-            <li><a href="#">Logout</a></li>
-          </ul>
-        </div>
-      </nav>
+      <Navbar/>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {/* Left Section: Upload Section - 25% Width */}

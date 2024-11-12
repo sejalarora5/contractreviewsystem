@@ -9,7 +9,6 @@ const FileUpload = ({ labelText = "Upload File" , onFileSelect, id}) => {
     const [error, setError] = useState(''); // for error messages
     const [loading, setLoading] = useState(false); // for showing loading state
     const token = useSelector((state) => state.auth.token);
-    // console.log("tokenn bearer", token)
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
         

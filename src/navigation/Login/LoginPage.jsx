@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom'; 
 
 import image from "../../assets/woman.png";
-import logo from "../../assets/netsmartz-logo.png";
+import logo from "../../assets/logo.png";
 import { loginUser } from '../../redux/slices/authSlice';
 
 const LoginPage = () => {

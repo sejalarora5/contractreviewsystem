@@ -70,7 +70,7 @@ const CompareDocuments = () => {
           <h2 className="font-semibold text-xl mb-4 text-center">Compare your Documents</h2>
           <button
             onClick={handleCompare}
-            className="text-white bg-gradient-to-r from-[#FF7E5F] via-[#FEB47B] to-[#FF7E5F] hover:bg-gradient-to-l focus:ring-4 focus:outline-none focus:ring-orange-200 dark:focus:ring-orange-800 font-medium rounded-full text-lg py-3 w-2/5 text-center shadow-lg transform transition duration-300 hover:scale-105"
+            className="text-white bg-gradient-to-r from-[#f58220] via-[#FEB47B] to-[#f58220] hover:bg-gradient-to-l focus:ring-4 focus:outline-none focus:ring-orange-200 dark:focus:ring-orange-800 font-medium rounded-full text-lg py-3 w-2/5 text-center shadow-lg transform transition duration-300 hover:scale-105"
           >
             Compare
           </button>

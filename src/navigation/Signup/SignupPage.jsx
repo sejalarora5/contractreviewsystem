@@ -5,7 +5,7 @@ import { signupUser } from '../../redux/slices/signupSlice';
 import { Link } from 'react-router-dom';
 
 import image from "../../assets/contract.png";
-import logo from "../../assets/netsmartz-logo.png";
+import logo from "../../assets/logo.png";
 
 const SignupPage = () => {
   const dispatch = useDispatch();
