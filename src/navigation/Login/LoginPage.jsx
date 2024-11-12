@@ -15,9 +15,13 @@ const LoginPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     dispatch(loginUser({username, password}))
-    .then(() => {
+    .then((e) => {
+      // console.log("HELLO",e.type);
+      if(e.type=='auth/token/fulfilled'){
+        navigate('/');
+      }
       // Navigate to the home screen after successful login
-      navigate('/'); // Replace '/home' with the actual path of your home screen
+      // Replace '/home' with the actual path of your home screen
     })
     .catch(() => {
       // Handle error if login fails
