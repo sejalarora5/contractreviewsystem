@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import FileUpload from '../../components/FileUpload/FileUpload';
 import { RiDeleteBin5Fill } from "react-icons/ri";
 import { useSelector } from "react-redux";
@@ -13,6 +13,7 @@ const HomePage = () => {
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState('');
+  const[fileName, setFileName] = useState('')
   const token = useSelector((state) => state.auth.token);
 
   const handleStandardFileSelect = (file) => setStandardFile(file);
@@ -41,7 +42,6 @@ const HomePage = () => {
         },
       });
       console.log('res', response)
-
       setLoading(false);
       setProgress(100);
     } catch (error) {
@@ -50,6 +50,30 @@ const HomePage = () => {
       setProgress(0);
     }
   };
+  useEffect(()=> {
+    handleFiles()
+  }, [])
+  const handleFiles = async () => {
+    try {
+      const response = await axios.get(`${baseUrl}view-standard-file`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'ngrok-skip-browser-warning': '69420',
+          'Accept': 'application/json',
+        },
+       
+      });
+      console.log('res', response.data.message)
+      setFileName(response.data.message)
+      console.log('response', response.data.message)
+
+    } catch (error) {
+      setError('Failed to fetch file name');
+      setLoading(false);
+      setProgress(0);
+    }
+  };
+
 
   const handleDeleteDocuments = async () => {
     try {

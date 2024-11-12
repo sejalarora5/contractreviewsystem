@@ -100,7 +100,7 @@ const ClauseAssistant = ({ selectedDocumentType = selectedDocumentType }) => {
                             value={clause}
                             onChange={(e) => setClause(e.target.value)}
                         />
-                        {loading ? (
+                        {loading && !error ? (
                             <div role="status" className="absolute right-4 top-1/2 justify-center transform -translate-y-1/2 w-6 h-6">
                                 <svg
                                     aria-hidden="true"

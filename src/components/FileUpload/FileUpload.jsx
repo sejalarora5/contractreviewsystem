@@ -26,7 +26,7 @@ const FileUpload = ({ labelText = "Upload File" , onFileSelect, id}) => {
       };
    
     return (
-        <div className="flex flex-col items-center justify-center p-2">
+        <div className="flex flex-col items-center justify-center p-2 w-64 mx-auto">
             <div className="flex flex-col items-center">
                 <input
                     type="file"
@@ -47,11 +47,11 @@ const FileUpload = ({ labelText = "Upload File" , onFileSelect, id}) => {
 
             </div>
 
-            {file && !loading && (
+            {/* {file && !loading && (
                 <div className="mt-4 text-sm text-gray-600">
                     File: <span className="font-semibold">{file.name}</span>
                 </div>
-            )}
+            )} */}
 
             {error && <div className="mt-2 text-red-500 text-sm">{error}</div>}
 

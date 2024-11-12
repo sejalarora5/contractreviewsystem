@@ -57,20 +57,20 @@ const CompareDocuments = () => {
         </div>
       )}
       {error && (
-        <div className="flex justify-center items-center w-full mt-6">
-          <div className="bg-red-500 text-white p-4 rounded-lg shadow-md w-full max-w-md mx-auto text-center">
+        <div className="flex justify-center items-center w-full h-full mt-6">
+          <div className="bg-[#f58220] text-white p-4 rounded-lg shadow-md w-full max-w-md mx-auto text-center">
             <p className="font-semibold text-xl">Oops! Something went wrong.</p>
             <p className="mt-2">{error}</p>
           </div>
         </div>
       )}
 
-      {!loading && !comparisonData && (
+      {!loading && !error && !comparisonData && (
         <div className='w-full min-h-full flex flex-col items-center justify-center'>
           <h2 className="font-semibold text-xl mb-4 text-center">Compare your Documents</h2>
           <button
             onClick={handleCompare}
-            className="text-white bg-gradient-to-r bg-[#f58220] hover:bg-gradient-to-l focus:ring-4 focus:outline-none focus:ring-orange-200 dark:focus:ring-orange-800 font-medium rounded-full text-lg py-3 w-2/5 text-center shadow-lg transform transition duration-300 hover:scale-105"
+            className="text-white rounded-xl bg-gradient-to-r bg-[#f58220] hover:bg-gradient-to-l focus:ring-4 focus:outline-none focus:ring-orange-200 dark:focus:ring-orange-800 font-medium text-lg py-3 w-2/5 text-center shadow-lg transform transition duration-300 hover:scale-105"
           >
             Compare
           </button>
