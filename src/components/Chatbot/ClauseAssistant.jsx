@@ -44,7 +44,7 @@ const ClauseAssistant = ({ selectedDocumentType = selectedDocumentType }) => {
         formData.append("document_type", selectedDocumentType);
 
         try {
-            const res = await axios.post(`${baseUrl}explanation/explain-clause/`, formData, {
+            const res = await axios.post(`${baseUrl}/explanation/explain-clause/`, formData, {
                 headers: {
                     "Authorization": `Bearer ${token}`,
                     "Content-Type": "multipart/form-data",

@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-
-import api from '../../components/services/api'
+import axios from 'axios';
 
 // export const signupUser = createAsyncThunk('auth/signup', async (userDetails, { rejectWithValue }) => {
 //   try {
@@ -13,6 +12,9 @@ import api from '../../components/services/api'
 //     return rejectWithValue(error.response?.data || error.message);
 //   }
 // });
+const api = axios.create({
+  baseURL: import.meta.env.VITE_BASE_URL, // Your base URL from .env
+});
 export const signupUser = createAsyncThunk('auth/signup', async ({ username,
   email,
   fullname,

@@ -20,7 +20,7 @@ const CompareDocuments = () => {
 
     try {
       // const url = 'https://9669-112-196-16-34.ngrok-free.app/comparison/compare-documents';
-      const response = await axios.get(`${baseUrl}comparison/compare-documents`, {
+      const response = await axios.get(`${baseUrl}/comparison/compare-documents/`, {
         headers: {
           Authorization: `Bearer ${token}`,
           'ngrok-skip-browser-warning': '69420',

@@ -33,7 +33,7 @@ const HomePage = () => {
     formData.append('revised_file', revisedFile);
 
     try {
-      const response = await axios.post(`${baseUrl}upload-documents`, formData, {
+      const response = await axios.post(`${baseUrl}/upload-documents/`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization': `Bearer ${token}`,
@@ -52,12 +52,12 @@ const HomePage = () => {
       setProgress(0);
     }
   };
-  useEffect(()=> {
-    handleFiles()
-  }, [])
+  // useEffect(()=> {
+  //   handleFiles()
+  // }, [])
   const handleFiles = async () => {
     try {
-      const response = await axios.get(`${baseUrl}view-standard-file`, {
+      const response = await axios.get(`${baseUrl}/view-standard-file`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'ngrok-skip-browser-warning': '69420',
@@ -77,7 +77,7 @@ const HomePage = () => {
   };
   const handleRedlinedFiles = async () => {
     try {
-      const response = await axios.get(`${baseUrl}view-redlined-file`, {
+      const response = await axios.get(`${baseUrl}/view-redlined-file`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'ngrok-skip-browser-warning': '69420',
@@ -99,7 +99,7 @@ const HomePage = () => {
 
   const handleDeleteDocuments = async () => {
     try {
-      const response = await fetch(`${baseUrl}delete-documents`, {
+      const response = await fetch(`${baseUrl}/delete-documents`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'multipart/form-data',
