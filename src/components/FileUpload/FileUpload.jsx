@@ -55,7 +55,7 @@ const FileUpload = ({ labelText = "Upload File" , onFileSelect, id}) => {
                 </div>
             )}
 
-            {error && <div className="mt-2 text-red-500 text-sm">{error}</div>}
+            {/* {error && <div className="mt-2 text-red-500 text-sm">{error}</div>} */}
 
         </div>
     );

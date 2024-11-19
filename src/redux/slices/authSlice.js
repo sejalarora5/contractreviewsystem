@@ -15,13 +15,15 @@ export const loginUser = createAsyncThunk('auth/token', async ({ username, passw
       },
     });
     console.log("response", response.data.access_token)
-    return response.data.access_token;
+    return response.data;
   } catch (error) {
-    console.log(error)
-    return rejectWithValue(error.response.data);
-
+    // return rejectWithValue(error.response.data); 
+    const errorMessage = error.response?.data?.detail || 'An unexpected error occurred';
+    console.log(errorMessage, 'this is error')
+    return rejectWithValue(errorMessage);
   }
 });
+
 
 const authSlice = createSlice({
   name: 'auth',
@@ -29,7 +31,7 @@ const authSlice = createSlice({
     user: null,
     loading: false,
     error: null,
-    token:null
+    token: null
   },
   reducers: {
     logout: (state) => {
@@ -47,7 +49,7 @@ const authSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload;
-        state.token = action.payload;
+        state.token = action.payload.access_token;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;

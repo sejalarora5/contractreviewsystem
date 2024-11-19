@@ -14,7 +14,11 @@ import userSlice from '../redux/slices/userSlice';
 import signupSlice from '../redux/slices/signupSlice';
 import authSlice from '../redux/slices/authSlice';
 
-
+const authPersistConfig = {
+  key: 'root',
+  storage,
+  blacklist: ['loading', 'error'], // Prevent loading and error from persisting
+};
 const persistConfig = {
   key: "root",
   storage,
@@ -24,6 +28,7 @@ const rootReducers = combineReducers({
     user: userSlice,   
     signup: signupSlice,
     auth: authSlice,
+    // auth: persistReducer(authPersistConfig, authSlice),
 
 });
 

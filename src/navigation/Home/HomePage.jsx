@@ -15,7 +15,6 @@ const HomePage = () => {
   const [error, setError] = useState('');
   const[redlinedFileName, setRedlinedFileName] = useState('')
   const[standardFileName, setStandardFileName] = useState('')
-
   const token = useSelector((state) => state.auth.token);
 
   const handleStandardFileSelect = (file) => setStandardFile(file);
@@ -99,15 +98,17 @@ const HomePage = () => {
 
   const handleDeleteDocuments = async () => {
     try {
-      const response = await fetch(`${baseUrl}/delete-documents`, {
+      const response = await fetch(`${baseUrl}/delete-documents/`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization': `Bearer ${token}`,
         },
       });
+      console.log(response)
+
       if (response.ok) {
-        console.log("Documents deleted successfully");
+        alert("Documents deleted successfully");
       } else {
         console.error("Failed to delete documents");
       }
@@ -143,6 +144,8 @@ const HomePage = () => {
 
           <button onClick={handleUpload} className="btn btn-block hover:bg-[#f58220] mt-4">Process Documents</button>
           <button className="flex items-center btn-block justify-center space-x-2 pt-2 text-red-500 mt-2" onClick={handleDeleteDocuments}>
+          {/* {error && <div className="mt-4 text-red-500">{error}</div>} */}
+
             {/* <RiDeleteBin5Fill className="w-6 h-8" /> */}
             <svg id="Layer_1" height="30" viewBox="0 0 24 24" width="30" xmlns="http://www.w3.org/2000/svg" data-name="Layer 1"><path fill="red" d="m21.414 5h-4.414v-4.414zm.586 2v17h-20v-21a3 3 0 0 1 3-3h10v7zm-8.586 8 2.543-2.543-1.414-1.414-2.543 2.543-2.543-2.543-1.414 1.414 2.543 2.543-2.543 2.543 1.414 1.414 2.543-2.543 2.543 2.543 1.414-1.414z"/></svg>
           </button>

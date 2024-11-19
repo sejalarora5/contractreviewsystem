@@ -1,20 +1,41 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setUsername, setEmail, setFullname, setPassword, clearSignupData , } from '../../redux/slices/signupSlice';
+import { setUsername, setEmail, setFullname, setPassword, clearSignupData, } from '../../redux/slices/signupSlice';
 import { signupUser } from '../../redux/slices/signupSlice';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import image from "../../assets/contract.png";
 import logo from "../../assets/logo.png";
 
 const SignupPage = () => {
-  const dispatch = useDispatch();
-  const { username, email, fullname, password } = useSelector((state) => state.signup);
+  const { username, email, fullname, password , loading} = useSelector((state) => state.signup);
+  const {  error, clearSignupData } = useSelector((state) => state.auth);
 
-  const handleSubmit = (e) => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // const userDetails = { username, email, fullname, password };
-    dispatch(signupUser({ username, email, fullname, password }));
+    const resultAction = await dispatch(signupUser({ username,email, fullname,  password }));
+    if (signupUser.fulfilled.match(resultAction)) {
+      navigate('/login');
+    } else {
+      console.log(error,' Signup error')
+      alert(resultAction.payload)
+      
+      console.error("Login failed:", resultAction.payload || "Unexpected error");
+    }
+    // dispatch(signupUser({ username, email, fullname, password }))
+    //   .then((e) => {
+    //     if (e.type == 'auth/signup/fulfilled') {
+    //       dispatch(clearSignupData());
+    //       navigate('/login');
+    //     }
+    //   })
+    //   .catch(() => {
+    //     // Handle error if login fails
+    //   });
   };
 
   return (
@@ -27,7 +48,7 @@ const SignupPage = () => {
       {/* Form Section */}
       <div className="flex-1 flex flex-col">
         <div className="flex justify-end items-center pr-6 pt-6">
-          <img className="w-50 h-20 object-contain" src={logo} alt="Netsmartz Logo" />
+          <img className="w-56 h-20 object-contain" src={logo} alt="Netsmartz Logo" />
         </div>
         <div className="flex-1 flex justify-center items-center bg-white-100 mb-20">
           <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-lg drop-shadow-lg">
@@ -87,7 +108,7 @@ const SignupPage = () => {
               </div>
 
               <button type="submit" className="text-white bg-[#F39200] hover:bg-[#D97B00] w-full py-2 rounded-lg font-semibold">
-                Sign Up
+                {loading ? <span className="loading loading-dots loading-md"></span> : 'SIGN UP'}
               </button>
             </form>
             <div className="text-center mt-4">
