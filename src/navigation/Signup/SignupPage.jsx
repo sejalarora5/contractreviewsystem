@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setUsername, setEmail, setFullname, setPassword, clearSignupData, } from '../../redux/slices/signupSlice';
+import { setUsername, setEmail, clearSignupData, setFullname, setPassword } from '../../redux/slices/signupSlice';
 import { signupUser } from '../../redux/slices/signupSlice';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -8,8 +8,7 @@ import image from "../../assets/contract.png";
 import logo from "../../assets/logo.png";
 
 const SignupPage = () => {
-  const { username, email, fullname, password , loading} = useSelector((state) => state.signup);
-  const {  error, clearSignupData } = useSelector((state) => state.auth);
+  const { username, email, fullname, password , loading, error} = useSelector((state) => state.signup);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -19,23 +18,12 @@ const SignupPage = () => {
     e.preventDefault();
     const resultAction = await dispatch(signupUser({ username,email, fullname,  password }));
     if (signupUser.fulfilled.match(resultAction)) {
+      dispatch(clearSignupData());
       navigate('/login');
     } else {
-      console.log(error,' Signup error')
-      alert(resultAction.payload)
-      
-      console.error("Login failed:", resultAction.payload || "Unexpected error");
+      console.log("Signup error:", error);
+      alert(resultAction.payload || "Signup failed: Unexpected error");
     }
-    // dispatch(signupUser({ username, email, fullname, password }))
-    //   .then((e) => {
-    //     if (e.type == 'auth/signup/fulfilled') {
-    //       dispatch(clearSignupData());
-    //       navigate('/login');
-    //     }
-    //   })
-    //   .catch(() => {
-    //     // Handle error if login fails
-    //   });
   };
 
   return (

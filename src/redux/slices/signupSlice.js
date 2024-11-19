@@ -31,7 +31,7 @@ export const signupUser = createAsyncThunk('auth/signup', async ({ username,
   } catch (error) {
     console.log("Signup error", error)
 
-    return rejectWithValue(error.response?.data || error.message);
+    return rejectWithValue(error.response?.data?.detail || error.message);
   }
 });
 
@@ -80,7 +80,7 @@ const signupSlice = createSlice({
       })
       .addCase(signupUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = action.error;
       });
   },
 });
