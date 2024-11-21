@@ -9,7 +9,7 @@ import logo from "../../assets/logo.png";
 
 const SignupPage = () => {
   const { username, email, fullname, password , loading, error} = useSelector((state) => state.signup);
-
+  const [showPassword, setShowPassword] = useState(false); 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -85,7 +85,7 @@ const SignupPage = () => {
               <div className="text-left">
                 <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900">Password</label>
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   id="password"
                   value={password}
                   onChange={(e) => dispatch(setPassword(e.target.value))}
@@ -94,6 +94,16 @@ const SignupPage = () => {
                   required
                 />
               </div>
+              <div className="flex items-center">
+                  <input
+                    id="show-password"
+                    type="checkbox"
+                    checked={showPassword}
+                    onChange={(e) => setShowPassword(e.target.checked)}  // Toggle showPassword state
+                    className="h-4 w-4 text-[#F39200]"
+                  />
+                  <label htmlFor="show-password" className="ml-2 text-sm text-gray-600">Show Password</label>
+                </div>
 
               <button type="submit" className="text-white bg-[#F39200] hover:bg-[#D97B00] w-full py-2 rounded-lg font-semibold">
                 {loading ? <span className="loading loading-dots loading-md"></span> : 'SIGN UP'}
