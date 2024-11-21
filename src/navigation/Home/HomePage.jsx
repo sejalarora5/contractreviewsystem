@@ -121,7 +121,7 @@ const HomePage = () => {
     <div className="min-h-screen bg-white-50">
       <Navbar/>
 
-      <div className="grid grid-cols-1  md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {/* Left Section: Upload Section - 25% Width */}
         <div className="col-span-1 bg-white p-4 shadow rounded-lg">
           <h3 className="font-bold text-center text-xl pb-2">Upload Files</h3>
@@ -156,7 +156,7 @@ const HomePage = () => {
         <CompareDocuments />
 
         {/* Right Section: History - 25% Width */}
-        {/* <div className="col-span-1 bg-white p-4 shadow rounded-lg">
+        <div className="col-span-1 bg-white p-4 shadow rounded-lg">
           <h3 className="font-bold mb-4 text-center">History</h3>
           <ul className="space-y-2">
             {["2023-10-01", "2023-09-28", "2023-09-25", "2023-09-20", "2023-09-15"].map((date, index) => (
@@ -167,7 +167,7 @@ const HomePage = () => {
               </li>
             ))}
           </ul>
-        </div> */}
+        </div>
       </div>
     </div>
   );

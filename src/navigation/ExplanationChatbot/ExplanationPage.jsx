@@ -78,15 +78,14 @@ const ExplanationPage = () => {
                     </div>
                 </div>
 
-                {/* Middle Section for Validation Assistant */}
-                <div className="col-span-3 bg-white p-2 shadow-md rounded-lg">
+                {/* Middle Section for Clause Assistant */}
+                <div className="col-span-2 bg-white p-2 shadow-md rounded-lg"> 
                     <h3 className="font-bold text-center text-lg">Clause Assistant</h3>
-                    {/* Add Validation Chat or Assistant Components Here */}
                     <ClauseAssistant selectedDocumentType={selectedDocument} />
                 </div>
 
                 {/* Right Section: History */}
-                {/* <div className="col-span-1 bg-white p-4 shadow rounded-lg">
+                <div className="col-span-1 bg-white p-4 shadow rounded-lg">
                     <h3 className="font-bold mb-4 text-center">Validation History</h3>
                     <ul className="space-y-2">
                         {["2023-10-01", "2023-09-28", "2023-09-25", "2023-09-20", "2023-09-15"].map((date, index) => (
@@ -97,7 +96,7 @@ const ExplanationPage = () => {
                             </li>
                         ))}
                     </ul>
-                </div> */}
+                </div>
             </div>
         </div>
     );
