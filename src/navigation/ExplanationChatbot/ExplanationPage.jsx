@@ -21,6 +21,10 @@ const ExplanationPage = () => {
     };
 
     const startFreshSession = () => {
+        console.log(
+            "Clicking reset session"
+        )
+        setSelectedHistory(null)
         setStartSession(true)
         
     };
@@ -147,7 +151,7 @@ const ExplanationPage = () => {
                 {/* Middle Section for Clause Assistant */}
                 <div className="col-span-2 bg-white p-2 shadow-md rounded-lg">
                     <h3 className="font-bold text-center text-lg">Clause Assistant</h3>
-                    <ClauseAssistant selectedDocumentType={selectedDocument} selectedHistory={selectedHistory} startFresh={startSession} />
+                    <ClauseAssistant selectedDocumentType={selectedDocument} selectedHistory={selectedHistory} startFresh={startSession} setStartFresh={setStartSession} />
                 </div> 
                 {/* Right Section: History */}
                 <div className="col-span-1 bg-white p-4 shadow rounded-lg">

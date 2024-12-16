@@ -134,42 +134,46 @@ import { AiOutlineSend } from 'react-icons/ai';
 //         </div>
 //     );
 // };
-const ClauseAssistant = ({ selectedDocumentType, selectedHistory, startFresh }) => {
+const ClauseAssistant = ({ selectedDocumentType, selectedHistory, startFresh, setStartFresh }) => {
     const [clause, setClause] = useState('');
-    const [messages, setMessages] = useState([]); // Array of chat messages
+    const initMessage=[
+        { sender: 'bot', text: "Welcome to the Clause Assistant!" },
+        { sender: 'bot', text: "How can I assist you today?" }
+    ]
+    const [messages, setMessages] = useState(
+    initMessage); // Array of chat messages
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const token = useSelector((state) => state.auth.token);
     const handleStartFresh = () => {
         // Reset chat and clause input for fresh session
-        setMessages([
-            { sender: 'bot', text: "Welcome to the Clause Assistant!" },
-            { sender: 'bot', text: "How can I assist you today?" }
-        ]);
+        setMessages(initMessage);
+        console.log("resetting clause")
         setClause('');
     };
-    
+
+    console.log("startFresh", startFresh)
+
     // Trigger the handleStartFresh function if startFresh is true
-    if (startFresh) {
-        handleStartFresh();
-    }
-    
+
+    useEffect(() => {
+        if (startFresh) {
+            handleStartFresh();
+        }
+    }, [startFresh])
+    console.log(selectedHistory)
     useEffect(() => {
         if (selectedHistory) {
             // If there is a selected history, show the relevant messages
             setMessages([
-                { sender: 'bot', text: "Welcome to the Clause Assistant!" },
-                { sender: 'bot', text: "How can I assist you today?" },
+                ...initMessage,
                 { sender: 'user', text: selectedHistory.clause },
                 { sender: 'bot', text: selectedHistory.explanation },
                 { sender: 'bot', text: `Example: ${selectedHistory.example}` }
             ]);
         } else {
             // Otherwise, set initial messages
-            setMessages([
-                { sender: 'bot', text: "Welcome to the Clause Assistant!" },
-                { sender: 'bot', text: "How can I assist you today?" }
-            ]);
+            setMessages(initMessage);
         }
     }, [selectedHistory]);
 
@@ -177,6 +181,7 @@ const ClauseAssistant = ({ selectedDocumentType, selectedHistory, startFresh }) 
         const baseUrl = import.meta.env.VITE_BASE_URL;
         setError(null);
         setLoading(true);
+        setStartFresh(false);
 
         // Add the user's message to the chat
         setMessages((prevMessages) => [
