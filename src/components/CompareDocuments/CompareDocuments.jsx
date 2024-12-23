@@ -31,7 +31,7 @@ const CompareDocuments = () => {
       setStandardDoc(response.data.standard_file_name);
       setRedlinedDoc(response.data.redlined_file_name);
     } catch (err) {
-      setError('Failed to fetch comparison data.');
+      setError(err.response.data.detail);
     } finally {
       setLoading(false);
     }
@@ -50,7 +50,7 @@ const CompareDocuments = () => {
   };
 
   return (
-    <div className="col-span-2 bg-white p-4 shadow rounded-lg flex flex-col items-center relative">
+    <div className="col-span-3 bg-white p-4 shadow rounded-lg flex flex-col items-center relative">
       {loading && (
         <div className="flex justify-center items-center w-full h-full absolute top-0 left-0 bg-opacity-50 bg-white z-50">
           <div className="w-16 h-16 border-4 border-t-4 border-gray-300 border-t-[#f58220] rounded-full animate-spin"></div>
