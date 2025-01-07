@@ -1,18 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import document from "../../assets/document.svg"
 
-const CompareDocuments = () => {
+const CompareDocuments = ({ comparisonData, redlinedDocName, standardDocName }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [comparisonData, setComparisonData] = useState(null);
+  // const [comparisonData, setComparisonData] = useState(null);
   const [currentPage, setCurrentPage] = useState(0); // Current section page
   const token = useSelector((state) => state.auth.token);
   const baseUrl = import.meta.env.VITE_BASE_URL;
-  const [redlinedDoc, setRedlinedDoc] = useState('')
-  const [standardDoc, setStandardDoc] = useState('')
-
+  // const [redlinedDoc, setRedlinedDoc] = useState('')
+  // const [standardDoc, setStandardDoc] = useState('')
+  console.log('comapre', comparisonData)
   const handleCompare = async () => {
     setLoading(true);
     setError(null);
@@ -36,7 +36,10 @@ const CompareDocuments = () => {
       setLoading(false);
     }
   };
-
+  useEffect(() => {
+    // Reset currentPage to 0 whenever comparisonData changes
+    setCurrentPage(0);
+  }, [comparisonData]);
   const nextPage = () => {
     if (currentPage < comparisonData.length - 1) {
       setCurrentPage(currentPage + 1);
@@ -50,7 +53,7 @@ const CompareDocuments = () => {
   };
 
   return (
-    <div className="col-span-3 bg-white p-4 shadow rounded-lg flex flex-col items-center relative">
+    <div className="col-span-2 bg-white p-4 shadow rounded-lg flex flex-col items-center relative">
       {loading && (
         <div className="flex justify-center items-center w-full h-full absolute top-0 left-0 bg-opacity-50 bg-white z-50">
           <div className="w-16 h-16 border-4 border-t-4 border-gray-300 border-t-[#f58220] rounded-full animate-spin"></div>
@@ -65,7 +68,7 @@ const CompareDocuments = () => {
         </div>
       )}
 
-      {!loading && !error && !comparisonData && (
+      {/* {!loading && !error && !comparisonData && (
         <div className='w-full min-h-full flex flex-col items-center justify-center'>
           <h2 className="font-semibold text-xl mb-4 text-center">Compare your Documents</h2>
           <button
@@ -75,8 +78,8 @@ const CompareDocuments = () => {
             Compare
           </button>
         </div>
-      )}
-      
+      )} */}
+
       {!loading && comparisonData && (
         <div className="w-full h-[650px] space-y-6 text-left flex flex-col overflow-auto">
           <h3 className="font-semibold text-2xl text-gray-800 tracking-wide text-center">Comparison Results</h3>
@@ -92,7 +95,7 @@ const CompareDocuments = () => {
                 <div>
                   <p className="text-s ml-2 font-medium mt-2 text-left text-gray-800">Standard Document</p>
                   <p className="text-sm ml-2 text-[#f58220] text-left line-clamp-2 max-w-xs sm:max-w-[10rem] md:max-w-[12rem] lg:max-w-[14rem]">
-                    {standardDoc}
+                    {standardDocName}
                   </p>
                 </div>
               </div>
@@ -105,7 +108,7 @@ const CompareDocuments = () => {
                 <div>
                   <p className="text-s ml-2 font-medium mt-2 text-left text-gray-800">Redlined Document</p>
                   <p className="text-sm ml-2 text-[#f58220] text-left line-clamp-2 max-w-xs sm:max-w-[10rem] md:max-w-[12rem] lg:max-w-[14rem]">
-                    {redlinedDoc}
+                    {redlinedDocName}
                   </p>
                 </div>
               </div>
