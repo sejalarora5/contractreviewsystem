@@ -1,17 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-// export const signupUser = createAsyncThunk('auth/signup', async (userDetails, { rejectWithValue }) => {
-//   try {
-//     const response = await api.post('/auth/register', userDetails);
-//     console.log(response)
-//     return response.data;
-//   } catch (error) {
-//     console.log(error)
-
-//     return rejectWithValue(error.response?.data || error.message);
-//   }
-// });
 const api = axios.create({
   baseURL: import.meta.env.VITE_BASE_URL, // Your base URL from .env
 });

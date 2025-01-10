@@ -2,59 +2,46 @@ import React, { useEffect, useState } from 'react'
 import FileUpload from '../../components/FileUpload/FileUpload';
 import { RiDeleteBin5Fill } from "react-icons/ri";
 import { useSelector } from "react-redux";
-const baseUrl = import.meta.env.VITE_BASE_URL;
 import axios from 'axios';
 import CompareDocuments from '../../components/CompareDocuments/CompareDocuments';
 import Navbar from '../../components/Navbar/Navbar';
 import deleteimg from "../../assets/deleted.png";
 import comparison from "../../assets/compare.png";
+import axiosInstance from '../../utils/axiosInstance';
+const baseUrl = import.meta.env.VITE_BASE_URL;
 
 const HomePage = () => {
+
+  const token = useSelector((state) => state.auth.token);
+
   const [standardFile, setStandardFile] = useState(null);
   const [revisedFile, setRevisedFile] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [historyLoading, setHistoryLoading] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [error, setError] = useState('');
-  const [redlinedFileName, setRedlinedFileName] = useState('')
-  const [standardFileName, setStandardFileName] = useState('')
-  const token = useSelector((state) => state.auth.token);
-  const [history, setHistory] = useState([]);
-
-  const [selectedHistory, setSelectedHistory] = useState(null);
-
-  const handleStandardFileSelect = (file) => setStandardFile(file);
-  const handleRevisedFileSelect = (file) => setRevisedFile(file);
   const [redlinedDoc, setRedlinedDoc] = useState('')
   const [standardDoc, setStandardDoc] = useState('')
 
-  // const handleTabClick = async (item) => {
-  //   setLoading(true);
-  //   setError(null);
-  //   try {
-  //     const response = await axios.get(`${baseUrl}/history/get-history-details/`, {
-  //       params: { id: item.id },
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //         Accept: 'application/json',
-  //       },
-  //     });
-  //     setSelectedHistory({
-  //       comparisonData: response.data.comparison_result.changes,
-  //       standardDoc: response.data.standard_file_name,
-  //       redlinedDoc: response.data.redlined_file_name,
-  //     });
-  //   } catch (err) {
-  //     setError('Error fetching comparison details.');
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+  const [loading, setLoading] = useState(false);
+  const [isComparing, setIsComparing] = useState(false);
+  const [historyLoading, setHistoryLoading] = useState(false);
 
+  const [progress, setProgress] = useState(0);
+  const [error, setError] = useState('');
+
+  const [history, setHistory] = useState([]);
+  const [shouldResetFiles, setShouldResetFiles] = useState(false);
+
+  const [selectedHistory, setSelectedHistory] = useState(null);
+  const [comparisonResult, setComparisonResult] = useState(null);
+
+  const [redlinedFileName, setRedlinedFileName] = useState('')
+  const [standardFileName, setStandardFileName] = useState('')
+
+  const handleStandardFileSelect = (file) => setStandardFile(file);
+  const handleRevisedFileSelect = (file) => setRevisedFile(file);
+
+  // Upload Documents API
   const handleUpload = async () => {
     if (!standardFile || !revisedFile) {
       setError('Please upload both files');
-      alert('Please upload both files');
       return;
     }
     setLoading(true);
@@ -73,52 +60,54 @@ const HomePage = () => {
           setProgress(progress);
         },
       });
-      console.log('res', response)
+      console.log('Response of upload docs api', response)
       setLoading(false);
       setProgress(100);
+      setError('')
+      if (response.status === 200) {
+        // If upload is successful, start comparison
+        await startNewComparison();
+      }
     } catch (error) {
-      console.log('error', error)
+      console.log('Error of upload docs api', error)
       setError(error.response.data.detail);
       setLoading(false);
       setProgress(0);
     }
   };
-  const [comparisonResult, setComparisonResult] = useState(null);
 
+  // History API
   const fetchHistory = async (offset = 0, limit = 10) => {
-    console.log('token', token);
     setHistoryLoading(true)
     try {
-      const response = await axios.get(`${baseUrl}/history/get-history/`, {
+      const response = await axiosInstance.get('/history/get-history/', {
         params: {
           offset,
           limit,
         },
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Accept': 'application/json',
-        },
       });
-      console.log(response.data);
+      console.log('Response of fetch history API', response.data);
       setHistoryLoading(false)
-      console.log(typeof response.data.comparison_history)
       setHistory(response.data.comparison_history || []);
+      // setStandardDoc(response.data.comparison_history.result.standard_file_name);
+      // setRedlinedDoc(response.data.comparison_history.result.redlined_file_name);
     } catch (error) {
       console.error('Error fetching history:', error);
       setHistoryLoading(false)
     }
   };
+
   const handleTabClick = (item) => {
     setSelectedHistory(item); // Update selected history
-    console.log('item', item)
 
-    console.log(typeof item.result);
     const parsedResult = JSON.parse(item.result);
-    console.log('123', parsedResult.changes)
-    setComparisonResult(parsedResult.changes); // Parse and pass the result to the CompareDocuments component
+    setComparisonResult(parsedResult.comparison_result.changes); // Parse and pass the result to the Compare Documents component
+    setStandardDoc(parsedResult.standard_file_name);
+    setRedlinedDoc(parsedResult.redlined_file_name);
+
+    console.log('item', item)
   };
-
-
+  console.log('token', token)
 
   useEffect(() => {
     fetchHistory()
@@ -144,6 +133,7 @@ const HomePage = () => {
       setProgress(0);
     }
   };
+
   const handleRedlinedFiles = async () => {
     try {
       const response = await axios.get(`${baseUrl}/view-redlined-file`, {
@@ -165,7 +155,7 @@ const HomePage = () => {
     }
   };
 
-
+  // Delete Documents API
   const handleDeleteDocuments = async () => {
     try {
       const response = await fetch(`${baseUrl}/delete-documents/`, {
@@ -175,10 +165,15 @@ const HomePage = () => {
           'Authorization': `Bearer ${token}`,
         },
       });
-      console.log(response)
-
       if (response.ok) {
-        alert("Documents deleted successfully");
+        // Trigger file reset
+        setShouldResetFiles(true);
+        // Reset other related states
+        setStandardFile(null);
+        setRevisedFile(null);
+        setError('')
+        console.log('Successfuly deleted the documents', response)
+
       } else {
         console.error("Failed to delete documents");
       }
@@ -186,51 +181,51 @@ const HomePage = () => {
       console.error("Error deleting documents:", error);
     }
   };
-  const [isComparing, setIsComparing] = useState(false);
+
+  // Compare Documents API
+
   const startNewComparison = async () => {
     setIsComparing(true);
     try {
-      const response = await axios.get(`${baseUrl}/comparison/compare-documents/`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'ngrok-skip-browser-warning': '69420',
-          'Accept': 'application/json',
-        },
-      });
-      console.log("New comparison started:", response.data);
-      setComparisonResult(response.data.comparison_result.changes)
-      setStandardDoc(response.data.standard_file_name);
-      setRedlinedDoc(response.data.redlined_file_name);
-      // Handle response as needed
+      const response = await axiosInstance.get('/comparison/compare-documents/');
+      // Validate the response format
+      if (
+        response.data &&
+        response.data.comparison_result &&
+        Array.isArray(response.data.comparison_result.changes)
+      ) {
+        const changes = response.data.comparison_result.changes;
+
+        // Handle case when no changes are found
+        if (changes.length === 0) {
+          setError('No changes found between the documents.');
+          setComparisonResult([]); // Clear the comparison results in the UI
+          setIsComparing(false);
+        } else {
+          // Update the UI with valid results
+          fetchHistory();
+          setComparisonResult(changes);
+          setStandardDoc(response.data.standard_file_name);
+          setRedlinedDoc(response.data.redlined_file_name);
+          setError(''); // Clear any previous errors
+          setIsComparing(false);
+        }
+        console.log('New comparison started:', response.data);
+      } else {
+        throw new Error('Invalid response format'); // Handle unexpected response
+      }
     } catch (error) {
-      console.error("Error starting new comparison:", error);
+      console.error('Error starting new comparison:', error);
+      setError(error.response.data.detail);
     } finally {
       setIsComparing(false);
     }
   };
-  const handleCompare = async () => {
-    setLoading(true);
-    setError(null);
-    setComparisonData(null);
 
-    try {
-      // const url = 'https://9669-112-196-16-34.ngrok-free.app/comparison/compare-documents';
-      const response = await axios.get(`${baseUrl}/comparison/compare-documents/`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'ngrok-skip-browser-warning': '69420',
-          'Accept': 'application/json',
-        },
-      });
-      setComparisonData(response.data.comparison_result.changes);
-      setStandardDoc(response.data.standard_file_name);
-      setRedlinedDoc(response.data.redlined_file_name);
-    } catch (err) {
-      setError(err.response.data.detail);
-    } finally {
-      setLoading(false);
-    }
+  const handleResetComplete = () => {
+    setShouldResetFiles(false);
   };
+
   return (
     <div className="min-h-screen bg-white-50">
       <Navbar />
@@ -239,8 +234,12 @@ const HomePage = () => {
         {/* Left Section: Upload Section - 25% Width */}
         <div className="col-span-1 bg-white p-4 shadow rounded-lg">
           <h3 className="font-bold text-center text-xl pb-2">Upload Files</h3>
-          <FileUpload id={1} labelText="Upload standard file" onFileSelect={handleStandardFileSelect} />
-          <FileUpload id={2} labelText="Upload redlined file" onFileSelect={handleRevisedFileSelect} />
+          <FileUpload id={1} labelText="Upload standard file" onFileSelect={handleStandardFileSelect} shouldReset={shouldResetFiles}
+            onResetComplete={handleResetComplete}
+          />
+          <FileUpload id={2} labelText="Upload redlined file" onFileSelect={handleRevisedFileSelect} shouldReset={shouldResetFiles}
+            onResetComplete={handleResetComplete}
+          />
 
           {loading && (
             <div className="mt-4">
@@ -251,12 +250,12 @@ const HomePage = () => {
             </div>
           )}
 
-          {!loading && !error && (standardFile || revisedFile) && progress === 100 && (
+          {!loading && !error && (standardFile && revisedFile) && progress === 100 && (
             <div className="mt-4 text-[#F39200] text-sm">Files uploaded successfully!</div>
           )}
           {error && <div className="mt-4 text-red-500">{error}</div>}
 
-          <button onClick={handleUpload} className="btn btn-block hover:bg-[#f58220] mt-4">Process Documents</button>
+          <button onClick={handleUpload} className="btn btn-block hover:text-white hover:bg-[#f58220] my-4">Compare Documents</button>
           <button className="flex items-center btn-block justify-center space-x-2 pt-2 text-red-500 mt-2" onClick={handleDeleteDocuments}>
             {/* {error && <div className="mt-4 text-red-500">{error}</div>} */}
             <img className="w-10 h-auto object-contain" src={deleteimg} alt="Delete Documents" />
@@ -265,85 +264,91 @@ const HomePage = () => {
           </button>
 
         </div>
-        {/* <CompareDocuments /> */}
-        <div className="col-span-2 bg-white rounded-lg">
-          {/* <h3 className="font-bold mb-4 text-center">Comparison Results</h3> */}
-          {comparisonResult ? (
-            <CompareDocuments comparisonData={comparisonResult} redlinedDocName={redlinedDoc} standardDocName={standardDoc} />
-          ) : (
-            // <p className="text-center text-gray-500">No document comparison selected.</p>
-            <div className='w-full min-h-full flex flex-col items-center justify-center'>
-              {/* <h2 className="font-semibold text-xl mb-4 text-center">Compare your Documents</h2> */}
-              <button
-                onClick={startNewComparison}
-                className="text-white rounded-xl bg-gradient-to-r bg-[#f58220] hover:bg-gradient-to-l focus:ring-4 focus:outline-none focus:ring-orange-200 dark:focus:ring-orange-800 font-medium text-lg py-3 w-2/5 text-center shadow-lg transform transition duration-300 hover:scale-105"
-              >
-                Compare your documents
-              </button>
+        <div className="col-span-2 bg-white rounded-lg relative">
+          {/* {isComparing && (
+            <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-10">
+              <div className="flex flex-col items-center gap-4">
+                <span className="loading loading-spinner loading-lg text-[#f58220]"></span>
+                <p className="text-lg font-semibold text-gray-700">Comparing Documents...</p>
+              </div>
             </div>
+          )} */}
+          {isComparing ? (
+            <div className="relative w-full min-h-full">
+              {/* Show existing results in background if they exist */}
+              {comparisonResult && comparisonResult.length > 0 && (
+                <div className="opacity-50">
+                  <CompareDocuments
+                    comparisonData={comparisonResult}
+                    redlinedDocName={redlinedDoc}
+                    standardDocName={standardDoc}
+                  />
+                </div>
+              )}
+
+              {/* Loader overlay */}
+              <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-10">
+                <svg
+                  className="animate-spin h-8 w-8 text-[#f58220]"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v8H4z"
+                  ></path>
+                </svg>
+                <span className="ml-3 text-gray-600">Comparing documents...</span>
+              </div>
+            </div>
+          ) : (
+            <>
+              {comparisonResult && comparisonResult.length > 0 ? (
+                <CompareDocuments
+                  comparisonData={comparisonResult}
+                  redlinedDocName={redlinedDoc}
+                  standardDocName={standardDoc}
+                />
+              ) : (
+                <div className="w-full min-h-full flex flex-col items-center justify-center">
+                  {comparisonResult && comparisonResult.length === 0 ? (
+                    <div className="text-gray-500 text-lg text-center mb-4">
+                      No changes found between the documents.
+                    </div>
+                  ) : (
+                    <div className="text-gray-500 text-lg text-center mb-4">
+                      Upload documents to start comparison.
+                    </div>
+                  )}
+                  <button
+                    onClick={startNewComparison}
+                    disabled={isComparing}
+                    className="text-white rounded-xl bg-gradient-to-r bg-[#f58220] hover:bg-gradient-to-l focus:ring-4 focus:outline-none focus:ring-orange-200 dark:focus:ring-orange-800 font-medium text-lg py-3 w-2/5 text-center shadow-lg transform transition duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Compare your documents
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
 
+
         {/* Right Section: History - 25% Width */}
         <div className="col-span-1 bg-white p-4 shadow rounded-lg">
-          {/* <button
-            className="hover:bg-gray-400 font-bold w-full text-left text-black p-2 rounded mb-4"
-            onClick={startNewComparison}
-            disabled={isComparing}
-          >
-            {isComparing ? "Starting New Session..." : "New Comparison"}
-          </button> */}
-          <button
-            className="hover:bg-[#f58220] hover:text-white font-semibold w-full text-left text-black p-2 rounded mb-4 flex items-center justify-between"
-            onClick={startNewComparison}
-            disabled={isComparing}
-          >
-
-            {isComparing ? "Starting New Session..." : "New Comparison"}
-            <img
-              src={comparison} // Replace with your image path
-              alt="icon"
-              className="w-7 h-7 mr-2 justify-end" // Adjust size and spacing
-            />
-          </button>
 
           <h3 className="font-bold mb-4 px-2 text-left">Comparison History</h3>
 
-          {/* {history.length > 0 ? (
-            <div className="space-y-2">
-              {history.map((item) => {
-                let resultObj
-                try {
-                  // Parse result if it's a string
-                  resultObj = typeof item.result === 'string'
-                    ? JSON.parse(item.result.replace(/\\/g, '')) // Remove backslashes before parsing
-                    : item.result;
-                } catch (error) {
-                  console.error('Failed to parse result:', error);
-                  resultObj = null;
-                }
-                const changes = resultObj?.changes;
-                const revisedText = changes?.[0]?.revised_text || 'No text available';
-                // Debugging console logs
-                console.log('Item:', item);
-                console.log('Changes:', changes);
-                console.log('Revised Text:', revisedText);
-
-                return (
-                  <button
-                    key={item.id}
-                    className={`w-full text-left p-2 text-sm rounded-md border ${selectedHistory?.id === item.id ? 'bg-[#f58220] text-white' : 'bg-gray-100 text-black'
-                      }`}
-                    onClick={() => handleTabClick(item)}
-                  >
-                    {`${revisedText.split(' ').slice(0, 3).join(' ')}...`}
-                  </button>
-                );
-              })}
-            </div>
-          ) : (
-            <p className="text-center text-gray-500">No Comparison history available.</p>
-          )} */}
           {historyLoading ? (
             // Loader to indicate history is loading
             <div className="flex justify-center items-center py-40">
@@ -364,7 +369,8 @@ const HomePage = () => {
                   resultObj = null;
                 }
 
-                const changes = resultObj?.changes;
+                const changes = resultObj?.comparison_result?.changes;
+                console.log('changes', resultObj)
                 const revisedText =
                   changes?.[0]?.revised_text || "No text available";
 
@@ -372,8 +378,8 @@ const HomePage = () => {
                   <button
                     key={item.id}
                     className={`w-full text-left p-2 text-sm rounded-md border ${selectedHistory?.id === item.id
-                        ? "bg-[#f58220] text-white"
-                        : "bg-gray-100 text-black"
+                      ? "bg-[#f58220] text-white"
+                      : "bg-gray-100 text-black"
                       }`}
                     onClick={() => handleTabClick(item)}
                   >
@@ -395,5 +401,3 @@ const HomePage = () => {
 };
 
 export default HomePage;
-
-

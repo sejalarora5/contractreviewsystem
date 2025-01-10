@@ -29,22 +29,6 @@ const LoginPage = () => {
     }
   }, []);
 
-  // const handleSubmit = (e) => {
-  //   console.log( 'erroring', error)
-
-  //   e.preventDefault();
-  //   dispatch(loginUser({ username, password }))
-  //     .then((e) => {
-  //       // console.log("HELLO",e.type);
-  //       if (e.type == 'auth/token/fulfilled') {
-  //         navigate('/');
-  //         // console.log("HELLO",e.type);
-  //       }
-  //     })
-  //     .catch(() => {
-  //       // console.log('error', error)
-  //     });
-  // };
   const handleSubmit = async (e) => {
     e.preventDefault();
     

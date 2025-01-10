@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import upload from "../../assets/uploadfile.png"
 import fileupload from "../../assets/file-upload.svg"
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 import { useSelector } from 'react-redux';
 
-const FileUpload = ({ labelText = "Upload File" , onFileSelect, id}) => {
+const FileUpload = ({ labelText = "Upload File", onFileSelect, id, shouldReset, onResetComplete }) => {
     const [file, setFile] = useState(null);
     const [progress, setProgress] = useState(0); // for showing progress
     const [error, setError] = useState(''); // for error messages
@@ -13,18 +13,27 @@ const FileUpload = ({ labelText = "Upload File" , onFileSelect, id}) => {
     const token = useSelector((state) => state.auth.token);
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
-        
+
         if (!selectedFile || selectedFile.type !== 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-          setError('Please upload a valid .docx file');
-          setFile(null);
-          return;
+            setError('Please upload a valid .docx file');
+            setFile(null);
+            return;
         }
-    
+
         setError('');
         setFile(selectedFile);
         onFileSelect(selectedFile); // Pass file to parent if needed
-      };
-   
+    };
+    useEffect(() => {
+        if (shouldReset) {
+            setFile(null);
+            setProgress(0);
+            setError('');
+            setLoading(false);
+            onFileSelect(null); // Notify parent that file has been cleared
+            onResetComplete?.(); // Notify parent that reset is complete
+        }
+    }, [shouldReset, onFileSelect, onResetComplete]);
     return (
         <div className="flex flex-col items-center justify-center p-2 w-64 mx-auto">
             <div className="flex flex-col items-center">
@@ -34,6 +43,7 @@ const FileUpload = ({ labelText = "Upload File" , onFileSelect, id}) => {
                     onChange={handleFileChange}
                     className="hidden"
                     id={`file-upload${id}`}
+                    key={file ? 'has-file' : 'no-file'}
                 />
                 <label
                     htmlFor={`file-upload${id}`}
@@ -44,8 +54,6 @@ const FileUpload = ({ labelText = "Upload File" , onFileSelect, id}) => {
                     <p className="text-center text-black pt-5 line-clamp-2 max-w-xs sm:max-w-[8rem] md:max-w-[10rem] lg:max-w-[12rem]">{labelText}</p>
 
                 </label>
-
-
 
             </div>
 

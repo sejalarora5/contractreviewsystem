@@ -6,20 +6,15 @@ import document from "../../assets/document.svg"
 const CompareDocuments = ({ comparisonData, redlinedDocName, standardDocName }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  // const [comparisonData, setComparisonData] = useState(null);
   const [currentPage, setCurrentPage] = useState(0); // Current section page
   const token = useSelector((state) => state.auth.token);
   const baseUrl = import.meta.env.VITE_BASE_URL;
-  // const [redlinedDoc, setRedlinedDoc] = useState('')
-  // const [standardDoc, setStandardDoc] = useState('')
-  console.log('comapre', comparisonData)
+  console.log('Comparison Data Results', comparisonData)
   const handleCompare = async () => {
     setLoading(true);
     setError(null);
-    setComparisonData(null);
 
     try {
-      // const url = 'https://9669-112-196-16-34.ngrok-free.app/comparison/compare-documents';
       const response = await axios.get(`${baseUrl}/comparison/compare-documents/`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -27,7 +22,6 @@ const CompareDocuments = ({ comparisonData, redlinedDocName, standardDocName }) 
           'Accept': 'application/json',
         },
       });
-      setComparisonData(response.data.comparison_result.changes);
       setStandardDoc(response.data.standard_file_name);
       setRedlinedDoc(response.data.redlined_file_name);
     } catch (err) {
@@ -67,18 +61,6 @@ const CompareDocuments = ({ comparisonData, redlinedDocName, standardDocName }) 
           </div>
         </div>
       )}
-
-      {/* {!loading && !error && !comparisonData && (
-        <div className='w-full min-h-full flex flex-col items-center justify-center'>
-          <h2 className="font-semibold text-xl mb-4 text-center">Compare your Documents</h2>
-          <button
-            onClick={handleCompare}
-            className="text-white rounded-xl bg-gradient-to-r bg-[#f58220] hover:bg-gradient-to-l focus:ring-4 focus:outline-none focus:ring-orange-200 dark:focus:ring-orange-800 font-medium text-lg py-3 w-2/5 text-center shadow-lg transform transition duration-300 hover:scale-105"
-          >
-            Compare
-          </button>
-        </div>
-      )} */}
 
       {!loading && comparisonData && (
         <div className="w-full h-[650px] space-y-6 text-left flex flex-col overflow-auto">

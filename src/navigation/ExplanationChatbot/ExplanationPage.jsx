@@ -6,6 +6,7 @@ import standard from "../../assets/document-svg.svg"
 import redlined from "../../assets/audit.svg"
 import axios from 'axios';
 import { useSelector } from "react-redux";
+import axiosInstance from '../../services/axiosInstance';
 
 
 const ExplanationPage = () => {
@@ -30,23 +31,15 @@ const ExplanationPage = () => {
     };
     // Fetch history data from API
     const fetchHistory = async (offset = 0, limit = 10) => {
-        console.log('token', token);
         try {
-            const response = await axios.get(`${baseUrl}/history/get-history/`, {
+            const response = await axiosInstance.get('/history/get-history/', {
                 params: {
                     offset,
                     limit,
                 },
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Accept': 'application/json',
-                },
             });
-            console.log(response.data);
+            console.log('explanation_history', response.data.explanation_history);
             setHistory(response.data.explanation_history || []);
-            // if (response.data.explanation_history?.length > 0) {
-            //     setSelectedHistory(response.data.explanation_history[0]); // Set the first entry as default
-            // }
         } catch (error) {
             console.error('Error fetching history:', error);
         }
@@ -83,9 +76,7 @@ const ExplanationPage = () => {
     return (
         <div className="min-h-screen bg-white-50">
             <Navbar />
-
-
-            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 p-4">
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
                 {/* Left Section for Validation Specifics */}
                 <div className="col-span-1 bg-white p-4 shadow-md rounded-lg">
                     <h3 className="font-bold text-center text-xl pb-2">Select Document</h3>

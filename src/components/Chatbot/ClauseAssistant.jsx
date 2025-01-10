@@ -21,8 +21,6 @@ const ClauseAssistant = ({ selectedDocumentType, selectedHistory, startFresh, se
         setClause('');
     };
 
-    console.log("startFresh", startFresh)
-
     // Trigger the handleStartFresh function if startFresh is true
 
     useEffect(() => {
@@ -30,7 +28,7 @@ const ClauseAssistant = ({ selectedDocumentType, selectedHistory, startFresh, se
             handleStartFresh();
         }
     }, [startFresh])
-    console.log(selectedHistory)
+    console.log('selectedHistory', selectedHistory)
     useEffect(() => {
         if (selectedHistory) {
             // If there is a selected history, show the relevant messages
@@ -125,7 +123,7 @@ const ClauseAssistant = ({ selectedDocumentType, selectedHistory, startFresh, se
                         />
                         <button
                             onClick={handleSubmit}
-                            className="absolute right-2 top-2 text-[#f58220] text-xl"
+                            className="absolute right-2 top-3 text-[#f58220] text-xl"
                         >
                             <AiOutlineSend />
                         </button>
