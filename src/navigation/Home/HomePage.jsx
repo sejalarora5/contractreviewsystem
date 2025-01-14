@@ -1,14 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import FileUpload from '../../components/FileUpload/FileUpload';
-import { RiDeleteBin5Fill } from "react-icons/ri";
 import { useSelector } from "react-redux";
-import axios from 'axios';
 import CompareDocuments from '../../components/CompareDocuments/CompareDocuments';
 import Navbar from '../../components/Navbar/Navbar';
 import deleteimg from "../../assets/deleted.png";
-import comparison from "../../assets/compare.png";
-import axiosInstance from '../../utils/axiosInstance';
-const baseUrl = import.meta.env.VITE_BASE_URL;
+import ApiService from '../../services/apiService';
 
 const HomePage = () => {
 
@@ -32,9 +28,6 @@ const HomePage = () => {
   const [selectedHistory, setSelectedHistory] = useState(null);
   const [comparisonResult, setComparisonResult] = useState(null);
 
-  const [redlinedFileName, setRedlinedFileName] = useState('')
-  const [standardFileName, setStandardFileName] = useState('')
-
   const handleStandardFileSelect = (file) => setStandardFile(file);
   const handleRevisedFileSelect = (file) => setRevisedFile(file);
 
@@ -45,149 +38,35 @@ const HomePage = () => {
       return;
     }
     setLoading(true);
-    const formData = new FormData();
-    formData.append('standard_file', standardFile);
-    formData.append('revised_file', revisedFile);
+    setError('');
 
     try {
-      const response = await axios.post(`${baseUrl}/upload-documents/`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          'Authorization': `Bearer ${token}`,
-        },
-        onUploadProgress: (event) => {
-          const progress = Math.round((event.loaded * 100) / event.total);
-          setProgress(progress);
-        },
-      });
-      console.log('Response of upload docs api', response)
-      setLoading(false);
+      const response = await ApiService.documentApi.uploadDocuments(
+        standardFile,
+        revisedFile,
+        (progress) => setProgress(progress)
+      );
+
+      console.log('Upload response:', response);
       setProgress(100);
-      setError('')
+
       if (response.status === 200) {
-        // If upload is successful, start comparison
         await startNewComparison();
       }
     } catch (error) {
-      console.log('Error of upload docs api', error)
-      setError(error.response.data.detail);
-      setLoading(false);
+      console.error('Upload error:', error);
+      // setError(error.response?.data?.detail || 'Upload failed');
       setProgress(0);
-    }
-  };
-
-  // History API
-  const fetchHistory = async (offset = 0, limit = 10) => {
-    setHistoryLoading(true)
-    try {
-      const response = await axiosInstance.get('/history/get-history/', {
-        params: {
-          offset,
-          limit,
-        },
-      });
-      console.log('Response of fetch history API', response.data);
-      setHistoryLoading(false)
-      setHistory(response.data.comparison_history || []);
-      // setStandardDoc(response.data.comparison_history.result.standard_file_name);
-      // setRedlinedDoc(response.data.comparison_history.result.redlined_file_name);
-    } catch (error) {
-      console.error('Error fetching history:', error);
-      setHistoryLoading(false)
-    }
-  };
-
-  const handleTabClick = (item) => {
-    setSelectedHistory(item); // Update selected history
-
-    const parsedResult = JSON.parse(item.result);
-    setComparisonResult(parsedResult.comparison_result.changes); // Parse and pass the result to the Compare Documents component
-    setStandardDoc(parsedResult.standard_file_name);
-    setRedlinedDoc(parsedResult.redlined_file_name);
-
-    console.log('item', item)
-  };
-  console.log('token', token)
-
-  useEffect(() => {
-    fetchHistory()
-  }, [])
-
-  const handleFiles = async () => {
-    try {
-      const response = await axios.get(`${baseUrl}/view-standard-file`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'ngrok-skip-browser-warning': '69420',
-          'Accept': 'application/json',
-        },
-
-      });
-      console.log('res', response.data.message)
-      setStandardFileName(response.data.message)
-      console.log('response', response.data.message)
-
-    } catch (error) {
-      setError('Failed to fetch file name');
+    } finally {
       setLoading(false);
-      setProgress(0);
-    }
-  };
-
-  const handleRedlinedFiles = async () => {
-    try {
-      const response = await axios.get(`${baseUrl}/view-redlined-file`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'ngrok-skip-browser-warning': '69420',
-          'Accept': 'application/json',
-        },
-
-      });
-      console.log('res', response.data.message)
-      setRedlinedFileName(response.data.message)
-      console.log('response', response.data.message)
-
-    } catch (error) {
-      setError('Failed to fetch file name');
-      setLoading(false);
-      setProgress(0);
-    }
-  };
-
-  // Delete Documents API
-  const handleDeleteDocuments = async () => {
-    try {
-      const response = await fetch(`${baseUrl}/delete-documents/`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-      if (response.ok) {
-        // Trigger file reset
-        setShouldResetFiles(true);
-        // Reset other related states
-        setStandardFile(null);
-        setRevisedFile(null);
-        setError('')
-        console.log('Successfuly deleted the documents', response)
-
-      } else {
-        console.error("Failed to delete documents");
-      }
-    } catch (error) {
-      console.error("Error deleting documents:", error);
     }
   };
 
   // Compare Documents API
-
   const startNewComparison = async () => {
     setIsComparing(true);
     try {
-      const response = await axiosInstance.get('/comparison/compare-documents/');
+      const response = await ApiService.documentApi.compareDocuments();
       // Validate the response format
       if (
         response.data &&
@@ -216,12 +95,65 @@ const HomePage = () => {
       }
     } catch (error) {
       console.error('Error starting new comparison:', error);
-      setError(error.response.data.detail);
+      setError(error.detail);
     } finally {
       setIsComparing(false);
     }
   };
 
+  // Delete Documents API
+  const handleDeleteDocuments = async () => {
+    try {
+      const response = await ApiService.documentApi.deleteDocuments();
+      if (response.status === 200) {
+        setShouldResetFiles(true);
+        setStandardFile(null);
+        setRevisedFile(null);
+        setError('')
+        console.log('Successfuly deleted the documents', response)
+      }
+      else {
+        console.error("Failed to delete documents");
+      }
+    } catch (error) {
+      console.error("Error deleting documents:", error.response.data.detail);
+    }
+  };
+
+  // History API
+  const fetchHistory = async () => {
+    setHistoryLoading(true)
+    try {
+      const response = await ApiService.historyApi.getHistory(10,20);
+      console.log('Response of fetch history API', response.data);
+      setHistoryLoading(false)
+      setHistory(response.data.comparison_history || []);
+    } catch (error) {
+      console.error('Error fetching history:', error);
+      setHistoryLoading(false)
+    }
+  };
+
+
+
+  useEffect(() => {
+    fetchHistory()
+  }, [])
+
+
+
+  const handleTabClick = (item) => {
+    setSelectedHistory(item); // Update selected history
+
+    const parsedResult = JSON.parse(item.result);
+    setComparisonResult(parsedResult.comparison_result.changes); // Parse and pass the result to the Compare Documents component
+    setStandardDoc(parsedResult.standard_file_name);
+    setRedlinedDoc(parsedResult.redlined_file_name);
+
+    console.log('item', item)
+  };
+
+  console.log('token', token)
   const handleResetComplete = () => {
     setShouldResetFiles(false);
   };
@@ -345,7 +277,7 @@ const HomePage = () => {
 
 
         {/* Right Section: History - 25% Width */}
-        <div className="col-span-1 bg-white p-4 shadow rounded-lg">
+        <div className="col-span-1 bg-white h-[630px]">
 
           <h3 className="font-bold mb-4 px-2 text-left">Comparison History</h3>
 
@@ -355,7 +287,7 @@ const HomePage = () => {
               <span className="loading loading-spinner loading-lg"></span>
             </div>
           ) : history.length > 0 ? (
-            <div className="space-y-2">
+            <div className="space-y-2 overflow-y-auto h-full">
               {history.map((item) => {
                 let resultObj;
                 try {
@@ -370,7 +302,7 @@ const HomePage = () => {
                 }
 
                 const changes = resultObj?.comparison_result?.changes;
-                console.log('changes', resultObj)
+                // console.log('changes', resultObj)
                 const revisedText =
                   changes?.[0]?.revised_text || "No text available";
 
