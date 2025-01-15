@@ -5,7 +5,7 @@ import fileupload from "../../assets/file-upload.svg"
 const baseUrl = import.meta.env.VITE_BASE_URL;
 import { useSelector } from 'react-redux';
 
-const FileUpload = ({ labelText = "Upload File", onFileSelect, id, shouldReset, onResetComplete }) => {
+const FileUpload = ({ labelText = "Upload File", onFileSelect, onFileUpload, id, shouldReset, onResetComplete }) => {
     const [file, setFile] = useState(null);
     const [progress, setProgress] = useState(0); // for showing progress
     const [error, setError] = useState(''); // for error messages
@@ -36,7 +36,7 @@ const FileUpload = ({ labelText = "Upload File", onFileSelect, id, shouldReset, 
     }, [shouldReset, onFileSelect, onResetComplete]);
     return (
         <div className="flex flex-col items-center justify-center p-2 w-64 mx-auto">
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center w-64">
                 <input
                     type="file"
                     accept=".docx"
@@ -57,7 +57,7 @@ const FileUpload = ({ labelText = "Upload File", onFileSelect, id, shouldReset, 
 
             </div>
 
-            {file && !loading && (
+            {file && !loading && !onFileUpload && (
                 <div className="mt-4 text-sm text-gray-600">
                     File: <span className="font-semibold">{file.name}</span>
                 </div>

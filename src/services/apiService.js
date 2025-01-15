@@ -65,6 +65,16 @@ class ApiService {
             formData.append('document_type', documentType);
             return axiosInstance.post(ENDPOINTS.explainClause, formData);
         },
+
+        viewStandardFile: () => {
+            setJSONHeader();
+            return axiosInstance.get(ENDPOINTS.viewStandardFile)
+        },
+
+        viewRedlinedFile: () => {
+            setJSONHeader();
+            return axiosInstance.get(ENDPOINTS.viewRedlined)
+        }
     };
 
      // History APIs

@@ -7,6 +7,6 @@ export const ENDPOINTS = {
     deleteDocs: '/delete-documents/',
     getHistory: '/history/get-history/',
     explainClause: '/explanation/explain-clause/',
-    viewStandardFile: '/view-standard-file',
-    viewRedlined: '/view-redlined-file',
+    viewStandardFile: '/view-standard-file/',
+    viewRedlined: '/view-redlined-file/',
 };

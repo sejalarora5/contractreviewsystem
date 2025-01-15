@@ -14,6 +14,8 @@ const HomePage = () => {
   const [revisedFile, setRevisedFile] = useState(null);
   const [redlinedDoc, setRedlinedDoc] = useState('')
   const [standardDoc, setStandardDoc] = useState('')
+  const [fileUploaded, setFileUploaded] = useState(false)
+
 
   const [loading, setLoading] = useState(false);
   const [isComparing, setIsComparing] = useState(false);
@@ -27,6 +29,9 @@ const HomePage = () => {
 
   const [selectedHistory, setSelectedHistory] = useState(null);
   const [comparisonResult, setComparisonResult] = useState(null);
+
+  const [standardFileName, setStandardFileName] = useState('')
+  const [redlinedFileName, setRedlinedFileName] = useState('')
 
   const handleStandardFileSelect = (file) => setStandardFile(file);
   const handleRevisedFileSelect = (file) => setRevisedFile(file);
@@ -51,7 +56,8 @@ const HomePage = () => {
       setProgress(100);
 
       if (response.status === 200) {
-        await startNewComparison();
+        await handleFiles();
+        setFileUploaded(true)
       }
     } catch (error) {
       console.error('Upload error:', error);
@@ -111,6 +117,7 @@ const HomePage = () => {
         setRevisedFile(null);
         setError('')
         console.log('Successfuly deleted the documents', response)
+        await handleFiles();
       }
       else {
         console.error("Failed to delete documents");
@@ -124,7 +131,7 @@ const HomePage = () => {
   const fetchHistory = async () => {
     setHistoryLoading(true)
     try {
-      const response = await ApiService.historyApi.getHistory(10,20);
+      const response = await ApiService.historyApi.getHistory(10, 20);
       console.log('Response of fetch history API', response.data);
       setHistoryLoading(false)
       setHistory(response.data.comparison_history || []);
@@ -134,13 +141,33 @@ const HomePage = () => {
     }
   };
 
-
+  const handleFiles = async () => {
+    try {
+      const response = await ApiService.documentApi.viewStandardFile();
+      if (response.status === 200) {
+        setStandardFileName(response.data.message)
+        console.log('res', response.data.message)
+      }
+    }
+    catch (error) {
+      console.error('Failed to fetch file name');
+    }
+    try {
+      const response = await ApiService.documentApi.viewRedlinedFile();
+      if (response.status === 200) {
+        setRedlinedFileName(response.data.message)
+        console.log('res', response.data.message)
+      }
+    }
+    catch (error) {
+      console.error('Failed to fetch file name');
+    }
+  };
 
   useEffect(() => {
     fetchHistory()
+    handleFiles()
   }, [])
-
-
 
   const handleTabClick = (item) => {
     setSelectedHistory(item); // Update selected history
@@ -166,10 +193,10 @@ const HomePage = () => {
         {/* Left Section: Upload Section - 25% Width */}
         <div className="col-span-1 bg-white p-4 shadow rounded-lg">
           <h3 className="font-bold text-center text-xl pb-2">Upload Files</h3>
-          <FileUpload id={1} labelText="Upload standard file" onFileSelect={handleStandardFileSelect} shouldReset={shouldResetFiles}
+          <FileUpload id={1} labelText={standardFileName} onFileUpload={fileUploaded} onFileSelect={handleStandardFileSelect} shouldReset={shouldResetFiles}
             onResetComplete={handleResetComplete}
           />
-          <FileUpload id={2} labelText="Upload redlined file" onFileSelect={handleRevisedFileSelect} shouldReset={shouldResetFiles}
+          <FileUpload id={2} labelText={redlinedFileName} onFileUpload={fileUploaded} onFileSelect={handleRevisedFileSelect} shouldReset={shouldResetFiles}
             onResetComplete={handleResetComplete}
           />
 
@@ -277,8 +304,14 @@ const HomePage = () => {
 
 
         {/* Right Section: History - 25% Width */}
-        <div className="col-span-1 bg-white h-[630px]">
-
+        <div className="col-span-1 pr-2 bg-white h-[570px]">
+          <button
+            className="mb-4 w-full px-4 py-2 bg-[#f58220] text-white rounded-lg"
+            onClick={startNewComparison}
+            disabled={isComparing}
+          >
+            {isComparing ? "Starting New Session..." : "New Comparison"}
+          </button>
           <h3 className="font-bold mb-4 px-2 text-left">Comparison History</h3>
 
           {historyLoading ? (
