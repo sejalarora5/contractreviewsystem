@@ -1,16 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import upload from "../../assets/uploadfile.png"
 import fileupload from "../../assets/file-upload.svg"
-
-const baseUrl = import.meta.env.VITE_BASE_URL;
-import { useSelector } from 'react-redux';
 
 const FileUpload = ({ labelText = "Upload File", onFileSelect, onFileUpload, id, shouldReset, onResetComplete }) => {
     const [file, setFile] = useState(null);
     const [progress, setProgress] = useState(0); // for showing progress
     const [error, setError] = useState(''); // for error messages
     const [loading, setLoading] = useState(false); // for showing loading state
-    const token = useSelector((state) => state.auth.token);
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
 
@@ -34,8 +29,9 @@ const FileUpload = ({ labelText = "Upload File", onFileSelect, onFileUpload, id,
             onResetComplete?.(); // Notify parent that reset is complete
         }
     }, [shouldReset, onFileSelect, onResetComplete]);
+
     return (
-        <div className="flex flex-col items-center justify-center p-2 w-64 mx-auto">
+        <div className="flex flex-col items-center justify-center p-1 w-64 mx-auto">
             <div className="flex flex-col items-center w-64">
                 <input
                     type="file"
@@ -47,19 +43,27 @@ const FileUpload = ({ labelText = "Upload File", onFileSelect, onFileUpload, id,
                 />
                 <label
                     htmlFor={`file-upload${id}`}
-                    className="flex flex-col items-center space-x-2  cursor-pointer rounded-lg p-8  bg-gray-100 text-white"
+                    className="flex flex-col items-center space-x-2 cursor-pointer rounded-lg px-14 py-8 bg-gray-100 text-white"
                 >
-                    <img className="w-8/12 h-2/6 object-contain" src={fileupload} alt="Upload file" />
-                    {/* <p className='text-center text-black pt-5'>{labelText}</p> */}
-                    <p className="text-center text-black pt-5 line-clamp-2 max-w-xs sm:max-w-[8rem] md:max-w-[10rem] lg:max-w-[12rem]">{labelText}</p>
-
+                    <div className="w-32 h-32 flex items-center justify-center mb-4">
+                        <img
+                            className="w-full h-full object-contain"
+                            src={fileupload}
+                            alt="Upload file"
+                        />
+                    </div>
+                    <div className="h-6 flex items-center justify-center">
+                        <p className="text-center text-black text-sm px-2 line-clamp-2">
+                            {labelText}
+                        </p>
+                    </div>
                 </label>
 
             </div>
 
             {file && !loading && !onFileUpload && (
                 <div className="mt-4 text-sm text-gray-600">
-                    File: <span className="font-semibold">{file.name}</span>
+                    File: <span className="font-semibold ">{file.name}</span>
                 </div>
             )}
 

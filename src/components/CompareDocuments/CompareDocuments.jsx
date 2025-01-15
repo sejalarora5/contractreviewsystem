@@ -1,35 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useSelector } from 'react-redux';
 import document from "../../assets/document.svg"
 
 const CompareDocuments = ({ comparisonData, redlinedDocName, standardDocName }) => {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(0); // Current section page
-  const token = useSelector((state) => state.auth.token);
-  const baseUrl = import.meta.env.VITE_BASE_URL;
   console.log('Comparison Data Results', comparisonData)
-  const handleCompare = async () => {
-    setLoading(true);
-    setError(null);
 
-    try {
-      const response = await axios.get(`${baseUrl}/comparison/compare-documents/`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'ngrok-skip-browser-warning': '69420',
-          'Accept': 'application/json',
-        },
-      });
-      setStandardDoc(response.data.standard_file_name);
-      setRedlinedDoc(response.data.redlined_file_name);
-    } catch (err) {
-      setError(err.response.data.detail);
-    } finally {
-      setLoading(false);
-    }
-  };
   useEffect(() => {
     // Reset currentPage to 0 whenever comparisonData changes
     setCurrentPage(0);
@@ -48,21 +23,7 @@ const CompareDocuments = ({ comparisonData, redlinedDocName, standardDocName }) 
 
   return (
     <div className="col-span-2 bg-white p-4 shadow rounded-lg flex flex-col items-center relative">
-      {loading && (
-        <div className="flex justify-center items-center w-full h-full absolute top-0 left-0 bg-opacity-50 bg-white z-50">
-          <div className="w-16 h-16 border-4 border-t-4 border-gray-300 border-t-[#f58220] rounded-full animate-spin"></div>
-        </div>
-      )}
-      {error && (
-        <div className="flex justify-center items-center w-full h-full mt-6">
-          <div className="bg-[#f58220] text-white p-4 rounded-lg shadow-md w-full max-w-md mx-auto text-center">
-            <p className="font-semibold text-xl">Oops! Something went wrong.</p>
-            <p className="mt-2">{error}</p>
-          </div>
-        </div>
-      )}
-
-      {!loading && comparisonData && (
+      {comparisonData && (
         <div className="w-full h-[650px] space-y-6 text-left flex flex-col overflow-auto">
           <h3 className="font-semibold text-2xl text-gray-800 tracking-wide text-center">Comparison Results</h3>
 

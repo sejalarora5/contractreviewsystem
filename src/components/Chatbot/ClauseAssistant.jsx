@@ -1,19 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useSelector } from 'react-redux';
 import { FaUser, FaRobot } from 'react-icons/fa';
 import { AiOutlineSend } from 'react-icons/ai';
-const ClauseAssistant = ({ selectedDocumentType, selectedHistory, startFresh, setStartFresh }) => {
+import ApiService from '../../services/apiService';
+
+const ClauseAssistant = ({ onHistoryUpdate, selectedDocumentType, selectedHistory, startFresh, setStartFresh }) => {
     const [clause, setClause] = useState('');
     const initMessage=[
         { sender: 'bot', text: "Welcome to the Clause Assistant!" },
         { sender: 'bot', text: "How can I assist you today?" }
     ]
-    const [messages, setMessages] = useState(
-    initMessage); // Array of chat messages
+    const [messages, setMessages] = useState(initMessage); // Array of chat messages
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const token = useSelector((state) => state.auth.token);
     const handleStartFresh = () => {
         // Reset chat and clause input for fresh session
         setMessages(initMessage);
@@ -61,24 +59,15 @@ const ClauseAssistant = ({ selectedDocumentType, selectedHistory, startFresh, se
             return;
         }
 
-        const formData = new FormData();
-        formData.append("clause", clause);
-        formData.append("document_type", selectedDocumentType);
-
         try {
-            const res = await axios.post(`${baseUrl}/explanation/explain-clause/`, formData, {
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                    "Content-Type": "multipart/form-data",
-                },
-            });
-
+            const res = await ApiService.documentApi.explainClause(clause, selectedDocumentType);
             // Add the bot's response to the chat
             setMessages((prevMessages) => [
                 ...prevMessages,
                 { sender: 'bot', text: res.data.explanation_result.explanation },
                 { sender: 'bot', text: `Example: ${res.data.explanation_result.example}` }
             ]);
+            onHistoryUpdate();
         } catch (err) {
             setError("Failed to fetch explanation. Please try again.");
         } finally {
@@ -116,7 +105,7 @@ const ClauseAssistant = ({ selectedDocumentType, selectedHistory, startFresh, se
                     <div className="relative w-full">
                         <input
                             type="text"
-                            placeholder="Enter clause..."
+                            placeholder='Enter Clause...'
                             className="w-full px-4 py-3 pr-12 border rounded-lg outline-[#f58220]"
                             value={clause}
                             onChange={(e) => setClause(e.target.value)}
@@ -125,14 +114,12 @@ const ClauseAssistant = ({ selectedDocumentType, selectedHistory, startFresh, se
                             onClick={handleSubmit}
                             className="absolute right-2 top-3 text-[#f58220] text-xl"
                         >
-                            <AiOutlineSend />
+                           {loading? <span className="loading loading-spinner loading-sm"> </span> :  <AiOutlineSend />}
                         </button>
                     </div>
                 </div>
                 {/* Error message */}
                 {error && <p className="text-red-500 text-center mt-2">{error}</p>}
-                {/* Loading indicator */}
-                {loading && <p className="text-center mt-2">Loading...</p>}
             </div>
         </div>
     );

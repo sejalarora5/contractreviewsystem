@@ -116,6 +116,7 @@ const HomePage = () => {
         setStandardFile(null);
         setRevisedFile(null);
         setError('')
+        setFileUploaded(false);
         console.log('Successfuly deleted the documents', response)
         await handleFiles();
       }
@@ -131,8 +132,8 @@ const HomePage = () => {
   const fetchHistory = async () => {
     setHistoryLoading(true)
     try {
-      const response = await ApiService.historyApi.getHistory(10, 20);
-      console.log('Response of fetch history API', response.data);
+      const response = await ApiService.historyApi.getHistory(0, 20);
+      console.log('Response of comparison history API', response.data.comparison_history);
       setHistoryLoading(false)
       setHistory(response.data.comparison_history || []);
     } catch (error) {
@@ -165,10 +166,11 @@ const HomePage = () => {
   };
 
   useEffect(() => {
-    fetchHistory()
     handleFiles()
+    fetchHistory()
   }, [])
 
+  console.log('ohmy', fileUploaded)
   const handleTabClick = (item) => {
     setSelectedHistory(item); // Update selected history
 
@@ -191,8 +193,8 @@ const HomePage = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {/* Left Section: Upload Section - 25% Width */}
-        <div className="col-span-1 bg-white p-4 shadow rounded-lg">
-          <h3 className="font-bold text-center text-xl pb-2">Upload Files</h3>
+        <div className="col-span-1 bg-white p-3 shadow rounded-lg">
+          {/* <h3 className="font-bold text-center text-xl pb-2">Upload Documents</h3> */}
           <FileUpload id={1} labelText={standardFileName} onFileUpload={fileUploaded} onFileSelect={handleStandardFileSelect} shouldReset={shouldResetFiles}
             onResetComplete={handleResetComplete}
           />
@@ -209,13 +211,13 @@ const HomePage = () => {
             </div>
           )}
 
-          {!loading && !error && (standardFile && revisedFile) && progress === 100 && (
+          {!loading && !error && fileUploaded && (
             <div className="mt-4 text-[#F39200] text-sm">Files uploaded successfully!</div>
           )}
-          {error && <div className="mt-4 text-red-500">{error}</div>}
+          {error && <div className="mt-2 text-red-500">{error}</div>}
 
-          <button onClick={handleUpload} className="btn btn-block hover:text-white hover:bg-[#f58220] my-4">Compare Documents</button>
-          <button className="flex items-center btn-block justify-center space-x-2 pt-2 text-red-500 mt-2" onClick={handleDeleteDocuments}>
+          <button onClick={handleUpload} className="btn btn-block hover:text-white hover:bg-[#f58220] my-2">Upload Documents</button>
+          <button className="flex items-center btn-block justify-center space-x-2 pt-2 text-red-500" onClick={handleDeleteDocuments}>
             {/* {error && <div className="mt-4 text-red-500">{error}</div>} */}
             <img className="w-10 h-auto object-contain" src={deleteimg} alt="Delete Documents" />
             {/* <RiDeleteBin5Fill className="w-6 h-8" /> */}

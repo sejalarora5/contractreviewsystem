@@ -1,20 +1,27 @@
 import React, { useState, useEffect } from 'react'
-import upload from "../../assets/document3.jpg"
 import ClauseAssistant from '../../components/Chatbot/ClauseAssistant';
 import Navbar from '../../components/Navbar/Navbar';
-import standard from "../../assets/document-svg.svg"
-import redlined from "../../assets/audit.svg"
-import axios from 'axios';
 import { useSelector } from "react-redux";
-import axiosInstance from '../../services/axiosInstance';
-
+import ApiService from '../../services/apiService';
 
 const ExplanationPage = () => {
-    const baseUrl = import.meta.env.VITE_BASE_URL;
+
     const [selectedDocument, setSelectedDocument] = useState('')
     const [history, setHistory] = useState([]);
     const [selectedHistory, setSelectedHistory] = useState(null);
     const [startSession, setStartSession] = useState(false);
+    const [historyLoading, setHistoryLoading] = useState(false);
+
+    const [refreshHistory, setRefreshHistory] = useState(false);
+
+    const handleHistoryRefresh = () => {
+        setRefreshHistory(prev => !prev);
+    };
+
+    // Add refreshHistory to useEffect dependencies
+    useEffect(() => {
+        fetchHistory();
+    }, [refreshHistory]);
 
     const token = useSelector((state) => state.auth.token);
     const handleClick = (type) => {
@@ -27,31 +34,22 @@ const ExplanationPage = () => {
         )
         setSelectedHistory(null)
         setStartSession(true)
-        
+
     };
+
     // Fetch history data from API
-    const fetchHistory = async (offset = 0, limit = 10) => {
+    const fetchHistory = async () => {
+        setHistoryLoading(true)
         try {
-            const response = await axiosInstance.get('/history/get-history/', {
-                params: {
-                    offset,
-                    limit,
-                },
-            });
-            console.log('explanation_history', response.data.explanation_history);
+            const response = await ApiService.historyApi.getHistory(0, 20);
+            console.log('Response of explanation history API', response.data.explanation_history);
+            setHistoryLoading(false)
             setHistory(response.data.explanation_history || []);
         } catch (error) {
             console.error('Error fetching history:', error);
+            setHistoryLoading(false)
         }
     };
-
-    useEffect(() => {
-        fetchHistory();
-    }, []);
-
-    // const handleTabClick = (historyItem) => {
-    //     setSelectedHistory(historyItem);
-    // };
 
     const handleTabClick = (historyItem) => {
         // Check if historyItem is new and append to selectedHistory if necessary
@@ -142,10 +140,10 @@ const ExplanationPage = () => {
                 {/* Middle Section for Clause Assistant */}
                 <div className="col-span-2 bg-white p-2 shadow-md rounded-lg">
                     <h3 className="font-bold text-center text-lg">Clause Assistant</h3>
-                    <ClauseAssistant selectedDocumentType={selectedDocument} selectedHistory={selectedHistory} startFresh={startSession} setStartFresh={setStartSession} />
-                </div> 
+                    <ClauseAssistant onHistoryUpdate={handleHistoryRefresh} selectedDocumentType={selectedDocument} selectedHistory={selectedHistory} startFresh={startSession} setStartFresh={setStartSession} />
+                </div>
                 {/* Right Section: History */}
-                <div className="col-span-1 bg-white p-4 shadow rounded-lg">
+                <div className="col-span-1 bg-white p-4 h-[570px]">
 
                     <button
                         onClick={startFreshSession}
@@ -153,9 +151,16 @@ const ExplanationPage = () => {
                     >
                         Start Fresh Clause Assistant
                     </button>
+
                     <h3 className="font-bold mb-4 text-center">Clause History</h3>
-                    {history.length > 0 ? (
-                        <div className="space-y-2">
+
+                    {historyLoading ? (
+                        // Loader to indicate history is loading
+                        <div className="flex justify-center items-center py-40">
+                            <span className="loading loading-spinner loading-lg"></span>
+                        </div>
+                    ) : history.length > 0 ? (
+                        <div className="space-y-2 overflow-y-auto h-full">
                             {history.map((item) => (
                                 <button
                                     key={item.id}
