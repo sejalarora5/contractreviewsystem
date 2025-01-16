@@ -57,7 +57,7 @@ const ExplanationPage = () => {
             // If it's the same history item, don't update or append
             return;
         }
-
+        setSelectedHistory(historyItem);
         // Update selectedHistory when clicking on a different history tab
         setSelectedHistory((prevState) => {
             // If there's any content already in selectedHistory, add new content
@@ -161,15 +161,19 @@ const ExplanationPage = () => {
                         </div>
                     ) : history.length > 0 ? (
                         <div className="space-y-2 overflow-y-auto h-full">
-                            {history.map((item) => (
-                                <button
-                                    key={item.id}
-                                    className={`w-full text-left p-2 rounded-md border ${selectedHistory?.id === item.id ? 'bg-[#f58220] text-white' : 'bg-gray-100 text-black'}`}
-                                    onClick={() => handleTabClick(item)}
-                                >
-                                    {item.clause}
-                                </button>
-                            ))}
+                            {history.map((item) => {
+                                const clause = item?.clause || "No text available";
+                                return (
+                                    <button
+                                        key={item.id}
+                                        className={`w-full text-left p-2 rounded-md border ${selectedHistory?.id === item.id ? 'bg-[#f58220] text-white' : 'bg-gray-100 text-black'}`}
+                                        onClick={() => handleTabClick(item)}
+                                    >
+                                        {`${clause.split(" ").slice(0, 5).join(" ")}...`}
+                                    </button>
+                                );
+                            }
+                            )}
                         </div>
                     ) : (
                         <p className="text-center text-gray-500">No history available.</p>

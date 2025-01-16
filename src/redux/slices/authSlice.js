@@ -1,9 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-// Axios instance with base URL
 const api = axios.create({
-  baseURL: import.meta.env.VITE_BASE_URL, // Your base URL from .env
+  baseURL: import.meta.env.VITE_BASE_URL, 
 });
 
 // Login API thunk

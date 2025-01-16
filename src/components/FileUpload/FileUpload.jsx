@@ -43,7 +43,7 @@ const FileUpload = ({ labelText = "Upload File", onFileSelect, onFileUpload, id,
                 />
                 <label
                     htmlFor={`file-upload${id}`}
-                    className="flex flex-col items-center space-x-2 cursor-pointer rounded-lg px-14 py-8 bg-gray-100 text-white"
+                    className="flex flex-col w-56 items-center space-x-2 cursor-pointer rounded-lg px-14 py-8 bg-gray-100 text-white"
                 >
                     <div className="w-32 h-32 flex items-center justify-center mb-4">
                         <img
@@ -52,10 +52,10 @@ const FileUpload = ({ labelText = "Upload File", onFileSelect, onFileUpload, id,
                             alt="Upload file"
                         />
                     </div>
-                    <div className="h-6 flex items-center justify-center">
-                        <p className="text-center text-black text-sm px-2 line-clamp-2">
+                    <div className="h-6 w-28 flex items-center justify-center">
+                        <span className="text text-black px-2 line-clamp-2 break-words">
                             {labelText}
-                        </p>
+                        </span>
                     </div>
                 </label>
 

@@ -226,14 +226,6 @@ const HomePage = () => {
 
         </div>
         <div className="col-span-2 bg-white rounded-lg relative">
-          {/* {isComparing && (
-            <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-10">
-              <div className="flex flex-col items-center gap-4">
-                <span className="loading loading-spinner loading-lg text-[#f58220]"></span>
-                <p className="text-lg font-semibold text-gray-700">Comparing Documents...</p>
-              </div>
-            </div>
-          )} */}
           {isComparing ? (
             <div className="relative w-full min-h-full">
               {/* Show existing results in background if they exist */}
@@ -350,7 +342,7 @@ const HomePage = () => {
                       }`}
                     onClick={() => handleTabClick(item)}
                   >
-                    {`${revisedText.split(" ").slice(0, 3).join(" ")}...`}
+                    {`${revisedText.split(" ").slice(0, 5).join(" ")}...`}
                   </button>
                 );
               })}
